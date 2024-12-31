@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            font-family: Arial, sans-serif;
+            overflow: hidden;
+        }
+
+        .new-year {
+            font-size: 8em;
+            font-weight: bold;
+            color: #fff;
+            text-align: center;
+            animation: glow 2s ease-in-out infinite alternate;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073,
+                    0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
+            }
+            to {
+                text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6,
+                    0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
+            }
+        }
+
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            animation: explode 2s ease-out infinite;
+        }
+
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(50);
+                opacity: 0;
+            }
+        }
+
+        .blind-box {
+            margin-top: 50px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            text-align: center;
+            display: none;
+        }
+
+        .blind-box.active {
+            display: block;
+            animation: fadeIn 1s;
+        }
+
+        .login-form {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        input {
+            margin: 10px 0;
+            padding: 8px;
+            border-radius: 5px;
+            border: none;
+            width: 200px;
+        }
+
+        button {
+            padding: 10px 20px;
+            background: #e60073;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 10px;
+            transition: transform 0.3s;
+        }
+
+        button:hover {
+            transform: scale(1.1);
+        }
+
+        .wishes {
+            color: #fff;
+            font-size: 1.2em;
+            margin: 10px 0;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s;
+        }
+
+        .wishes.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        #noButton {
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .error {
+            color: #ff4da6;
+            font-size: 0.9em;
+            margin-top: 5px;
+        }
+
+        .just-kidding {
+            color: #ff4da6;
+            font-size: 1.5em;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .just-kidding.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="new-year">Happy New Year 2025!</div>
+    
+    <div class="login-form">
+        <input type="text" id="nameInput" placeholder="Enter your name">
+        <div class="error" id="nameError"></div>
+        <div style="margin: 20px 0;">
+          <p style="color: white;">Do you consider yourself a beautiful girl?</p>
+
+
+            <button onclick="handleWishes('yes')">No</button>
+            <button id="noButton" onclick="handleWishes('no')">Yes</button>
+        </div>
+        <button onclick="validateAndShowWishes()">Open Blind Box</button>
+    </div>
+
+    <div class="just-kidding" id="justKiddingMessage">Just kidding! 😄</div>
+
+    <div class="blind-box" id="blindBox">
+      <div class="wishes" id="wish1">Wishing Phương Hoa to always be beautifully radiant! ✨</div>
+      <div class="wishes" id="wish2">Wishing for your career to soar, with great success ahead! 🌟</div>
+      <div class="wishes" id="wish3">Wishing you abundant health and overflowing happiness! 💪</div>
+      <div class="wishes" id="wish4">Wishing all your dreams come true! 🎯</div>
+      <div class="wishes" id="wish5">Wishing you endless happiness and wonderful moments! ❤️</div>
+      <div class="wishes" id="wish6">Wishing you find true love this year! 💖</div>
+      <div class="wishes" id="wish7">Wishing you achieve all your goals this year! 🚀</div>
+      <div class="wishes" id="wish8">Wishing you to always be surrounded by loving people! 👨‍👩‍👧‍👦</div>
+      <div class="wishes" id="wish9">Wishing you to always smile happily every day! 😄</div>
+      <div class="wishes" id="wish10">Wishing you a 2025 full of joy and love! 💖</div>
+  </div>
+  
+
+    <script>
+        function createFirework() {
+            const firework = document.createElement('div');
+            firework.className = 'firework';
+            firework.style.left = Math.random() * 100 + 'vw';
+            firework.style.top = Math.random() * 100 + 'vh';
+            firework.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+            document.body.appendChild(firework);
+
+            setTimeout(() => {
+                firework.remove();
+            }, 2000);
+        }
+
+        setInterval(createFirework, 300);
+
+        let noButtonClickCount = 0;
+
+        function moveNoButton() {
+            const noButton = document.getElementById('noButton');
+            noButton.style.position = 'absolute';
+            noButton.style.left = Math.random() * (window.innerWidth - 100) + 'px';
+            noButton.style.top = Math.random() * (window.innerHeight - 40) + 'px';
+        }
+
+        document.getElementById('noButton').addEventListener('mouseover', moveNoButton);
+
+        function validateAndShowWishes() {
+            const nameInput = document.getElementById('nameInput').value;
+            const nameError = document.getElementById('nameError');
+
+            if (nameInput.trim() === '') {
+                nameError.textContent = 'Please enter your name';
+                return;
+            }
+
+            if (nameInput.trim() !== 'Nguyễn Phương Hoa') {
+                nameError.textContent = 'Please enter the correct name';
+                return;
+            }
+
+            nameError.textContent = '';
+            showBlindBox();
+        }
+
+        function showBlindBox() {
+            const blindBox = document.getElementById('blindBox');
+            blindBox.classList.add('active');
+
+            const wishes = document.querySelectorAll('.wishes');
+            wishes.forEach((wish, index) => {
+                setTimeout(() => {
+                    wish.classList.add('show');
+                }, index * 1000);
+            });
+        }
+
+        function handleWishes(answer) {
+            if (answer === 'no') {
+                document.getElementById('justKiddingMessage').classList.add('show');
+            }
+
+            if (answer === 'yes') {
+                document.getElementById('noButton').disabled = true;
+                document.getElementById('noButton').style.pointerEvents = 'none';  // Disables the "No" button after "Yes" is clicked
+                alert('Just kidding! You are always beautiful! 😄');
+            }
+        }
+    </script>
+</body>
+</html>
